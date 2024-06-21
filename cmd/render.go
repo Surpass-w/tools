@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"os"
 	"tool/internal"
 )
 
@@ -34,7 +34,7 @@ func init() {
 			params["to"] = ymlPath
 			params["data"] = data
 			info, _ := json.Marshal(params)
-			os.Stdout.Write(info)
+			fmt.Println(string(info))
 		}
 		err = internal.RenderFile(tplPath, ymlPath, data)
 		if err != nil {

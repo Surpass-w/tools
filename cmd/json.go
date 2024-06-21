@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"os"
 	"strconv"
 	"tool/internal"
 )
@@ -28,6 +29,7 @@ func init() {
 			key, _ := cmd.Flags().GetString("key")
 			value, _ := cmd.Flags().GetString("value")
 			Type, _ := cmd.Flags().GetInt64("type")
+			iFDebug, _ := cmd.Flags().GetBool("debug")
 			var v interface{}
 			switch Type {
 			case 1:
@@ -42,6 +44,15 @@ func init() {
 				vTmp, _ := strconv.ParseBool(value)
 				v = vTmp
 			}
+			if iFDebug {
+				params := make(map[string]interface{})
+				params["file"] = filePath
+				params["key"] = key
+				params["value"] = v
+				params["type"] = Type
+				info, _ := json.Marshal(params)
+				fmt.Println(string(info))
+			}
 			err := internal.Set(filePath, key, v)
 			if err != nil {
 				return errors.New("set json file value failed: " + err.Error())
@@ -55,11 +66,19 @@ func init() {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			filePath, _ := cmd.Flags().GetString("file")
 			key, _ := cmd.Flags().GetString("key")
+			iFDebug, _ := cmd.Flags().GetBool("debug")
+			if iFDebug {
+				params := make(map[string]interface{})
+				params["file"] = filePath
+				params["key"] = key
+				info, _ := json.Marshal(params)
+				fmt.Println(string(info))
+			}
 			value, err := internal.Get(filePath, key)
 			if err != nil {
 				return errors.New("get json file value failed: " + err.Error())
 			}
-			os.Stdout.WriteString(value)
+			fmt.Println(value)
 			return err
 		},
 	}
