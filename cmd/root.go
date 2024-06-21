@@ -24,5 +24,5 @@ func SetVersion(version string) {
 func init() {
 	var debug bool
 	rootCmd.PersistentFlags().SortFlags = false
-	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "", false, "show debug info")
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "i", false, "show debug info")
 }
