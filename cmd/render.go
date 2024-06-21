@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"os"
 	"tool/internal"
 )
 
@@ -20,13 +21,26 @@ func init() {
 
 	renderCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		tplPath := internal.RenderOptions.FromPath
-		ymlPath := internal.RenderOptions.FromPath
+		ymlPath := internal.RenderOptions.ToPath
 		data := make(map[string]interface{})
 		err := json.Unmarshal([]byte(internal.RenderOptions.MetaData), &data)
 		if err != nil {
 			return errors.New("json unmarshal data failed: " + err.Error())
 		}
-		return internal.RenderFile(tplPath, ymlPath, data)
+		iFDebug, _ := cmd.Flags().GetBool("debug")
+		if iFDebug {
+			params := make(map[string]interface{})
+			params["from"] = tplPath
+			params["to"] = ymlPath
+			params["data"] = data
+			info, _ := json.Marshal(params)
+			os.Stdout.Write(info)
+		}
+		err = internal.RenderFile(tplPath, ymlPath, data)
+		if err != nil {
+			return errors.New("generate yml failed: " + err.Error())
+		}
+		return err
 	}
 	rootCmd.AddCommand(renderCmd)
 }

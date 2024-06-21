@@ -20,3 +20,9 @@ func SetVersion(version string) {
 	rootCmd.SetVersionTemplate(`{{printf "Version: %s" .Version}}`)
 	rootCmd.Version = version
 }
+
+func init() {
+	var debug bool
+	rootCmd.PersistentFlags().SortFlags = false
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "", false, "show debug info")
+}

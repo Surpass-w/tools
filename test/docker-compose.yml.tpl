@@ -75,8 +75,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
-          memory: '4G'
+          cpus: '{{ ENGINE_CPU_NUM }}'
+          memory: '{{ ENGINE_MEM_NUM }}'
     restart: always
     container_name: sas_engine
     #ports:
@@ -93,7 +93,6 @@ services:
       #- /home/moresec/data/srv_res/sas_engine/scan_code:/app/scan_code #  代码
       - /home/moresec/data/mid_res/ms_code/code:/app/data/code #  代码
       - /home/moresec/data/com_res/ms_check/cpi:/app/data/ms_check/cpi
-      - /home/moresec/data/com_res/ms_check/fte:/app/data/ms_check/fte
       - /home/moresec/data/srv_res/sas_engine/output:/app/data/output #  代码
       - /etc/localtime:/etc/localtime
       - /var/run/docker.sock:/var/run/docker.sock
