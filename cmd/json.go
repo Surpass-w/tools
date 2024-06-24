@@ -16,44 +16,44 @@ var jsonCmd = &cobra.Command{
 
 func init() {
 	jsonCmd.PersistentFlags().SortFlags = false
-	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.JsonPath, "file", "f", "", "json file path")
-	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.K, "key", "k", "", "json key, example: file.engine.engine_cpu_num")
+	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.File, "file", "f", "", "json file path")
+	jsonCmd.PersistentFlags().StringSliceVarP(&internal.JsonOptions.Paths, "path", "p", []string{}, "path list, example: []string{'engine','engine_cpu_num'}")
 	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.V, "value", "v", "", "value")
-	jsonCmd.PersistentFlags().Int64VarP(&internal.JsonOptions.T, "type", "t", 2, "type of value")
+	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.T, "type", "t", "string", "type of value, example: int|string|bool")
 
 	setCmd := &cobra.Command{
 		Use:   "set",
 		Short: "set json file value",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			filePath, _ := cmd.Flags().GetString("file")
-			key, _ := cmd.Flags().GetString("key")
+			f, _ := cmd.Flags().GetString("file")
+			paths, _ := cmd.Flags().GetStringSlice("path")
 			value, _ := cmd.Flags().GetString("value")
-			Type, _ := cmd.Flags().GetInt64("type")
+			Type, _ := cmd.Flags().GetString("type")
 			iFDebug, _ := cmd.Flags().GetBool("debug")
-			var v interface{}
-			switch Type {
-			case 1:
-				// int类型
-				vTmp, _ := strconv.Atoi(value)
-				v = vTmp
-			case 2:
-				// string类型
-				v = value
-			case 3:
-				// bool类型
-				vTmp, _ := strconv.ParseBool(value)
-				v = vTmp
-			}
 			if iFDebug {
 				params := make(map[string]interface{})
-				params["file"] = filePath
-				params["key"] = key
-				params["value"] = v
+				params["file"] = f
+				params["path"] = paths
+				params["value"] = value
 				params["type"] = Type
 				info, _ := json.Marshal(params)
 				fmt.Println(string(info))
 			}
-			err := internal.Set(filePath, key, v)
+			var v interface{}
+			switch Type {
+			case internal.TypeInt:
+				// int类型
+				vTmp, _ := strconv.Atoi(value)
+				v = vTmp
+			case internal.TypeString:
+				// string类型
+				v = value
+			case internal.TypeBool:
+				// bool类型
+				vTmp, _ := strconv.ParseBool(value)
+				v = vTmp
+			}
+			err := internal.Set(f, paths, v)
 			if err != nil {
 				return errors.New("set json file value failed: " + err.Error())
 			}
@@ -64,21 +64,34 @@ func init() {
 		Use:   "get",
 		Short: "get json file value",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			filePath, _ := cmd.Flags().GetString("file")
-			key, _ := cmd.Flags().GetString("key")
+			f, _ := cmd.Flags().GetString("file")
+			paths, _ := cmd.Flags().GetStringSlice("path")
+			Type, _ := cmd.Flags().GetString("type")
 			iFDebug, _ := cmd.Flags().GetBool("debug")
 			if iFDebug {
 				params := make(map[string]interface{})
-				params["file"] = filePath
-				params["key"] = key
+				params["file"] = f
+				params["path"] = paths
 				info, _ := json.Marshal(params)
 				fmt.Println(string(info))
 			}
-			value, err := internal.Get(filePath, key)
+			jData, err := internal.Get(f, paths)
 			if err != nil {
 				return errors.New("get json file value failed: " + err.Error())
 			}
-			fmt.Println(value)
+			if jData != nil {
+				switch Type {
+				case internal.TypeInt:
+					res, _ := jData.Int()
+					fmt.Println(res)
+				case internal.TypeString:
+					res, _ := jData.String()
+					fmt.Println(res)
+				case internal.TypeBool:
+					res, _ := jData.Bool()
+					fmt.Println(res)
+				}
+			}
 			return err
 		},
 	}

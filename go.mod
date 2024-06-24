@@ -3,6 +3,7 @@ module tool
 go 1.22.3
 
 require (
+	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/goph/emperror v0.17.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
