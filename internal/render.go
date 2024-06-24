@@ -8,7 +8,6 @@ import (
 )
 
 var RenderOptions struct {
-	FromPath string
 	ToPath   string
 	MetaData string
 }

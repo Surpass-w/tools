@@ -16,8 +16,7 @@ var jsonCmd = &cobra.Command{
 
 func init() {
 	jsonCmd.PersistentFlags().SortFlags = false
-	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.File, "file", "f", "", "json file path")
-	jsonCmd.PersistentFlags().StringSliceVarP(&internal.JsonOptions.Paths, "path", "p", []string{}, "path list, example: []string{'engine','engine_cpu_num'}")
+	jsonCmd.PersistentFlags().StringSliceVarP(&internal.JsonOptions.Paths, "path", "p", []string{}, "path list, example: 'engine,engine_cpu_num'")
 	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.V, "value", "v", "", "value")
 	jsonCmd.PersistentFlags().StringVarP(&internal.JsonOptions.T, "type", "t", "string", "type of value, example: int|string|bool")
 

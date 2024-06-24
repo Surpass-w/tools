@@ -15,12 +15,11 @@ var renderCmd = &cobra.Command{
 
 func init() {
 	renderCmd.Flags().SortFlags = false
-	renderCmd.Flags().StringVarP(&internal.RenderOptions.FromPath, "from", "f", "", "tpl path")
 	renderCmd.Flags().StringVarP(&internal.RenderOptions.ToPath, "to", "t", "", "yml path")
 	renderCmd.Flags().StringVarP(&internal.RenderOptions.MetaData, "data", "d", "", "render meta data")
 
 	renderCmd.RunE = func(cmd *cobra.Command, args []string) error {
-		tplPath := internal.RenderOptions.FromPath
+		tplPath, _ := cmd.Flags().GetString("file")
 		ymlPath := internal.RenderOptions.ToPath
 		data := make(map[string]interface{})
 		err := json.Unmarshal([]byte(internal.RenderOptions.MetaData), &data)

@@ -22,7 +22,11 @@ func SetVersion(version string) {
 }
 
 func init() {
-	var debug bool
+	var (
+		debug   bool
+		optFile string
+	)
 	rootCmd.PersistentFlags().SortFlags = false
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "i", false, "show debug info")
+	rootCmd.PersistentFlags().StringVarP(&optFile, "file", "f", "", "option file path")
 }

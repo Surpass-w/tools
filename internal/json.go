@@ -12,7 +12,6 @@ var (
 )
 
 var JsonOptions struct {
-	File  string
 	Paths []string
 	V     string
 	T     string
@@ -21,7 +20,13 @@ var JsonOptions struct {
 func Set(filePath string, paths []string, value interface{}) error {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
+		f, err = os.Create(filePath)
+		if err != nil {
+			return err
+		}
 	}
 	defer f.Close()
 	j, err := simplejson.NewFromReader(f)
@@ -29,6 +34,7 @@ func Set(filePath string, paths []string, value interface{}) error {
 		return err
 	}
 	j.SetPath(paths, value)
+	j.Encode()
 	return nil
 }
 
